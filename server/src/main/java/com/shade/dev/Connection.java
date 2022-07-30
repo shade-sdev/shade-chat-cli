@@ -10,7 +10,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import static java.util.logging.Level.INFO;
@@ -28,24 +27,24 @@ public class Connection implements Runnable {
      * <p>Client</p>
      */
     @Getter
-    private Socket client;
+    private final Socket client;
 
     /**
      * <p>Server for accessing connections</p>
      */
-    private Server server;
+    private final Server server;
     /**
      * <p>Readers & Writers</p>
      */
-    private BufferedReader in;
-    private PrintWriter out;
+    private final BufferedReader in;
+    private final PrintWriter out;
     /**
      * <p>Client's nickname</p>
      */
     @Getter
     private String nickname = "newClient";
 
-    private ShadeLogger shadeLogger;
+    private final ShadeLogger shadeLogger;
 
     /**
      * <p>Constructor</p>
@@ -97,8 +96,6 @@ public class Connection implements Runnable {
 
     /**
      * <p>Method to shut down the client properly</p>
-     *
-     * @throws IOException if an I/O error occurs when shutting down the client
      */
     public void shutdownClient() {
         try {
@@ -109,7 +106,7 @@ public class Connection implements Runnable {
                 client.close();
             }
         } catch (IOException e) {
-            Logger.getAnonymousLogger().log(INFO, "Cannot shutdown Client");
+            shadeLogger.log(INFO, "Cannot shutdown Client");
         }
 
     }
