@@ -8,9 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.util.logging.Level.INFO;
 
@@ -43,7 +41,6 @@ public class Connection implements Runnable {
      */
     @Getter
     private String nickname = "newClient";
-
     private final ShadeLogger shadeLogger;
 
     /**
@@ -70,15 +67,10 @@ public class Connection implements Runnable {
             setNickname();
             server.broadcast(nickname + " joined the chat.");
 
-            String message;
-            while ((message = in.readLine()) != null) {
-
-                if (message.startsWith("/quit")) {
-                    removeClientFromConnectionList();
-                } else {
-                    server.broadcast(nickname + ": " + message);
-                }
-
+            String clientInput;
+            while ((clientInput = in.readLine()) != null) {
+                Message message = new Message(clientInput, server, this);
+                message.handle();
             }
         } catch (IOException e) {
             shutdownClient();
@@ -141,10 +133,4 @@ public class Connection implements Runnable {
         }
     }
 
-    private void removeClientFromConnectionList() {
-        server.broadcast(nickname + " left the chat.");
-        server.setConnections(server.getConnections().stream()
-                .filter(connection -> !connection.getNickname().equals(nickname))
-                .collect(Collectors.toCollection(ArrayList::new)));
-    }
 }
